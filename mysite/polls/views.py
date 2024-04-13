@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from .models import Choice, Question
+from django.db.models import Max
 from django.views import generic
 from django.urls import reverse
 from django.http import Http404
@@ -16,7 +17,7 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     model = Question
-    template_name = "polls/detail.html"
+    template_name = "polls/details.html"
 
 class ResultsView(generic.DetailView):
     model = Question
@@ -25,20 +26,18 @@ class ResultsView(generic.DetailView):
 class VoteView(generic.DetailView):
     model = Question
     template_name = "polls/vote.html"
-    
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(
             request,
-            "polls/detail.html",
+            "polls/details.html",
             {
                 "question": question,
-                "error_message": "You didn't select a choice.",
+                "error_message": "No elegiste una opción",
             },
         )
     else:
