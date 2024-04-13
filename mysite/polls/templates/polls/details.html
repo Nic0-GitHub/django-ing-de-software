@@ -1,20 +1,91 @@
-<h1>{{ question.question_text }}</h1>
-<ul>
-{% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }}</li>
-{% endfor %}
-</ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas de la encuesta</title>
+    <!-- Incluyo estilos de bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .card {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
+        .card ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
 
-<form action="{% url 'polls:vote' question.id %}" method="post">
-    {% csrf_token %}
-    <fieldset>
-        <legend><h1>{{ question.question_text }}</h1></legend>
-        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        {% for choice in question.choice_set.all %}
-            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-        {% endfor %}
-    </fieldset>
-    <input type="submit" value="Vote">
-</form>
+        .card ul li {
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-align: right;
+            padding-right: 200px;
+            color: #333;
+            display: block;
+        }
+        .btn-votar {
+            background-color: #007bff;
+            text-align: center;
+            display: block;
+            padding: 10px;
+            width: 100%;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.4s;
+        }
+
+        .btn-votar:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+            color: #000;
+        }
+    </style>
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+            <form class="form-horizontal" action="{% url 'polls:vote' question.id %}" method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend><h1>#{{question.id}} {{ question.question_text }}</h1></legend>
+                    {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        <strong>{{ error_message }}</strong>
+                    </div>
+                    {% endif %}
+                    {% for choice in question.choice_set.all %}
+                    <div class="form-group">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                                {{ choice.choice_text }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </fieldset>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Votar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
