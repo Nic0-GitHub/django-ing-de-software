@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.db.models import Max
 from django.db import models
 import datetime
 
@@ -8,7 +9,17 @@ class Question(models.Model):
     
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
-       
+
+    @property
+    def max_votes(self) -> int:
+        opciones = self.choice_set.all()
+        if opciones.exists():
+            max_votos = opciones.aggregate(Max('votes'))['votes__max']
+            return opciones.filter(votes=max_votos).first().votes
+        else:
+            return None
+
+    
     def __str__(self):
         return self.question_text
     
@@ -16,7 +27,7 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
-
+    
     def __str__(self):
         return self.choice_text    
 
